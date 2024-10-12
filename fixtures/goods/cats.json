@@ -1,0 +1,58 @@
+[
+  {
+    "model": "goods.categories",
+    "pk": 5,
+    "fields": {
+      "name": "T?o ????",
+      "slug": "all"
+    }
+  },
+  {
+    "model": "goods.categories",
+    "pk": 6,
+    "fields": {
+      "name": "ƿ?y",
+      "slug": "kuhnya"
+    }
+  },
+  {
+    "model": "goods.categories",
+    "pk": 7,
+    "fields": {
+      "name": "Ty??",
+      "slug": "spalnya"
+    }
+  },
+  {
+    "model": "goods.categories",
+    "pk": 8,
+    "fields": {
+      "name": "-ou??",
+      "slug": "dekor"
+    }
+  },
+  {
+    "model": "goods.categories",
+    "pk": 9,
+    "fields": {
+      "name": "L??yo?????
+      "slug": "furnitura"
+    }
+  },
+  {
+    "model": "goods.categories",
+    "pk": 10,
+    "fields": {
+      "name": "+?o?",
+      "slug": "ofis"
+    }
+  },
+  {
+    "model": "goods.categories",
+    "pk": 11,
+    "fields": {
+      "name": "+???oyo???
+      "slug": "gostinica"
+    }
+  }
+]

@@ -47,7 +47,7 @@ urls в других приложениях
 
 
 
-django ORM и модели
+                                            django ORM и модели
 в models.py делаем наши таблицы(сущности, классы)
 вот пример:
 class Categories(models.Model):
@@ -68,13 +68,72 @@ django orm это и есть queryset и там свои определенны
 обращаемся к конкретной модели from goods.models import Categories 
 вводим запросы Categories.object.all или создаем новый объект Categories.object.create
 
+                                        Примеры команды для django ORM
+Product.objects.filter(price__lt=300).order_by('price') 
+Product.objects.order_by('-price') 
+Product.objects.filter(id = 2)
+Product.objects.filter(price__lt=300) & Product.objects.filter(price__lt=100) 
+Product.objects.filter(description__contains = 'диван') - аналогия LIKE в SQL
+                                        Ленивые запросы (представления)
+goods = Product.objects.filter(category_id=7).order_by('price') 
+и вызываем только goods
+
+
 модели в admin.py можно регистрировать вот так:
+тут сделано с автогенерацией слагов
 @admin.register(Product)
 class ProductAdmin(admin.ModelAdmin):
     prepopulated_fields = {'slug': ('name',)}
     
+    
 это позволяет их менять, но это еще малоизучено для меня.
 
  
+Фикстуры
+создание копию данных в бд в json-файл
+создать сначало папку fixtures и в ней goods
+для каждой модели прописываем команды
+python manage.py dumpdata goods.Product > fixtures/goods/prod.json
+python manage.py dumpdata goods.Categories > fixtures/goods/cats.json
 
+debug_toolbar - мощный инструмент и считается как надстройка для django 
+и его можно скачать и настроить
+                                    Media
+создаем папку media и проводим манипуляции в файле settings
+Добавляем строки 
+MEDIA_URL = 'media/'
+MEDIA_ROOT = BASE_DIR / 'media'
+
+в файле urls - главный добавляем 
+urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+                                     и
+from django.conf.urls.static import static
+from app import settings
+
+далее обращаемся к ним. Например:
+{% if product.image %}
+        <img src="{{ product.image.url }}" class="card-img-top" alt="...">
+{% else %}
+
+
+                        templatetags
+создаем папку templatetags внутри приложения, создаем внутри неё файл __init__.py
+далее создаем файл, в котором создаем файл goods_tags.py  
+содержимое файла:
+from django import template
+from goods.models import Categories
+
+register = template.Library()
+@register.simple_tag()
+def tag_categories():
+    return Categories.objects.all()
+    
+здесь мы создаем такой объект которым мы можем исползовать в html в обход контроллеров
+и иметь доступ к данным к бд и использовать его везде
+в html его мы подгружаем {% load goods_tags %}
+и пользуемся им:
+{% tag_categories as categories %}
+                        {% for category in categories %}
+                            <li><a class="dropdown-item text-white" href="{% url "goods:index" %}">{{ category.name }}</a></li>
+                        {% endfor %}
 """
