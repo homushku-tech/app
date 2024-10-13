@@ -28,18 +28,18 @@ urlpatterns = [
 placeholder применяется от views к шаблону. Например {{title}} от request
 jinja шаблонизатор или же django template {{ block css }} {{ endblock }} при наследовании шаблонов
 
-Наследование шаблонов
+                    Наследование шаблонов
 создается базовый шаблон base.html
 в дочерние шаблоны прописывается {%extends "main/base.html"%}
 также есть {{ if условие }} {{ endif }} и {{ for }} {{ endfor }}
  
-статика
+                                статика
 {% load static %} везде где нужна статика
 "{% static "deps/css/bootstrap/bootstrap.min.css" %}" пути к статике 
 файлы статики в отдельной папке static в внутри приложения
 
 
-urls в других приложениях 
+                        urls в других приложениях 
 копируем основной urls
 оставляем нужные 
 и прописываем пространство имен app_name = 'main'
@@ -89,7 +89,7 @@ class ProductAdmin(admin.ModelAdmin):
 это позволяет их менять, но это еще малоизучено для меня.
 
  
-Фикстуры
+                                    Фикстуры
 создание копию данных в бд в json-файл
 создать сначало папку fixtures и в ней goods
 для каждой модели прописываем команды
@@ -136,4 +136,58 @@ def tag_categories():
                         {% for category in categories %}
                             <li><a class="dropdown-item text-white" href="{% url "goods:index" %}">{{ category.name }}</a></li>
                         {% endfor %}
+
+
+
+                        slag
+в url маршрут добавляем slag 
+например
+urlpatterns = [
+    path('', views.catalog, name='index'),
+    path('product/<int:product_id>/', views.product, name='product'),
+]
+
+слаги бывают разные там int, slag(текст), uuid, path 
+
+после меняем контроллер
+def product(request, product_id):
+    product = Product.objects.get(id = product_id)
+    context = {
+        'product': product
+    }
+    return render(request, 'goods/product.html', context=context)
+т.е в context добавляем product, где у нас будут данные из бд
+и в шаблоне используем так <a href="{% url "goods:product" product.id %}">
+                                        <p class="card-title">{{ product.name }}</p>
+                                    </a>
+                        Двойные слаги
+urlpatterns = [
+    path('<slug:category_slug>', views.catalog, name='index'),
+    path('<slug:category_slug>/<int:page>/', views.catalog, name='index'),
+    path('product/<slug:product_slug>/', views.product, name='product'),
+]
+соответсвенно меняем код в контроллере
+def catalog(request, category_slug, page=1):
+    if category_slug == 'all':
+        goods = Product.objects.all()
+    else:
+        goods = get_list_or_404(Product.objects.filter(category__slug=category_slug))
+
+    paginator = Paginator(goods, 3)
+    current_page = paginator.page(page)
+
+
+    context: dict[str, Any] ={
+        'title': 'Home - Каталог',
+        'goods': current_page,
+        'slug_url': category_slug
+    }
+    return render(request, 'goods/catalog.html', context)
+а в шаблоне url используем так 
+{% url "goods:index" slug_url page%}
+
+                    Пагинация
+лучше просмотреть код там ничего сложного
+
+
 """
